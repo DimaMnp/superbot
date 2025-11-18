@@ -1,0 +1,3 @@
+env vars
+NODE_EXTRA_CA_CERTS = 'path/to/certs'
+NODE_TLS_REJECT_UNAUTHORIZED = '0'
