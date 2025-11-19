@@ -10,9 +10,7 @@ class Gender(Enum):
 
 class Role(Enum):
     student = "student"
-    retraining = 'retraining'
     teacher = 'teacher'
-    management = 'management'
 
 
 class UserSchema(BaseModel):

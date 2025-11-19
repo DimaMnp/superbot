@@ -46,17 +46,7 @@ async def payloads(payload: str, age: int, gender: str):
             temperature=0.8,
             max_tokens=10000,
         )
-    if payload == "retraining":
-        return Chat(
-            messages=[
-                Messages(
-                    role=MessagesRole.SYSTEM,
-                    content=prompts.prompts["retraining"]+f"Учитывай возраст:{age} и пол: {gender}"
-                )
-            ],
-            temperature=0.4,
-            max_tokens=10000,
-        )
+    
     if payload == "teacher":
         return Chat(
             messages=[
@@ -68,17 +58,6 @@ async def payloads(payload: str, age: int, gender: str):
             temperature=0.6,
             max_tokens=10000,
         )
-    if payload == "management":
-        return Chat(
-            messages=[
-                Messages(
-                    role=MessagesRole.SYSTEM,
-                    content=prompts.prompts["management"]+f"Учитывай возраст:{age} и пол: {gender}"
-                )
-            ],
-            temperature=0.2,
-            max_tokens=10000,
-        ) 
     
 @router.websocket("/")
 async def assistant(websocket: WebSocket) -> str:
