@@ -10,6 +10,12 @@ class Conversation(Document):
     user_id: str
     messages: List[Dict] = []
 
+class Mail(Document):
+    user_id: str
+    text: List[Dict] = []
+
+
+
 class User(Document):
     id: UUID = Field(alias="_id", json_schema_extra={"unique": True}, default_factory=uuid4)
     first_name: str
@@ -20,7 +26,7 @@ class User(Document):
     age: int
     gender: Gender
     history: List[Link[Conversation]] = []
-
+    mail: List[Link[Mail]] = []
 
 class SecretAdmin(Document):
     """

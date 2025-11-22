@@ -27,6 +27,13 @@ class UserUpdate(BaseModel):
     new_age: int
     new_gender: Gender
 
+class Mail(BaseModel):
+    user_id: str
+    text: List[Dict] = []
+
+
+
+
 
 class UserRequest(BaseModel):
     email: str

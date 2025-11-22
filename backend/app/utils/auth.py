@@ -25,7 +25,8 @@ async def create_user(request: schemas.UserSchema):
         role=request.role,
         age=request.age,
         gender = request.gender,
-        history=[]
+        history=[],
+        mail=[]
     )
     ai_message = [{
             "role": "ai",
