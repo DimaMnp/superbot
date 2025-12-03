@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from datetime import timedelta
 
-from app.data.models import User
+from app.data.models import SecretAdmin, User
 from app.data import schemas
 from app.utils.error import Error
 from app.utils.auth import create_user, authenticate_user
@@ -30,14 +30,24 @@ async def registration_user(request: schemas.UserSchema) -> schemas.UserLogIn:
 
 @router.post("/login")
 async def log_in_user(request: Annotated[OAuth2PasswordRequestForm, Depends()]) -> schemas.Token:
-    user = await User.find_one(User.email == request.username)
-    if not user or not verify_password(request.password, user.password):
-        raise Error.UNAUTHORIZED_INVALID
+    admin = await SecretAdmin.find_one(SecretAdmin.email == request.username)
+    if admin:
 
-    token_expires = timedelta(minutes=1440)
-    token = await authenticate_user(data={"sub": request.username}, expires_delta=token_expires)
+        if not verify_password(request.password, admin.hashed_password):
+            raise Error.UNAUTHORIZED_INVALID
+            
+        admin_token_expires = timedelta(minutes=1440)
+        admin_token = await authenticate_user(data={"sub": request.username}, expires_delta=admin_token_expires)
+        return schemas.Token(access_token=admin_token, token_type="bearer")
+    else:
+        user = await User.find_one(User.email == request.username)
+        if not user or not verify_password(request.password, user.password):
+            raise Error.UNAUTHORIZED_INVALID
 
-    return schemas.Token(access_token=token, token_type="bearer")
+        token_expires = timedelta(minutes=1440)
+        token = await authenticate_user(data={"sub": request.username}, expires_delta=token_expires)
+
+        return schemas.Token(access_token=token, token_type="bearer")
 
 
 @router.patch(

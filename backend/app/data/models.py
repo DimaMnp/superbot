@@ -29,14 +29,14 @@ class User(Document):
     mail: List[Link[Mail]] = []
 
 class SecretAdmin(Document):
-    """
-    SecretAdmin model representing an admin user with additional security attributes.
-
-    Attributes:
-        hashed_password (str): Hashed password for the admin user.
-    """
-
+    id: UUID = Field(alias="_id", json_schema_extra={"unique": True}, default_factory=uuid4)
+    first_name: str
+    last_name: str
     hashed_password: str
+    email: EmailStr
+    history: List[Link[Conversation]] = []
+    mail: List[Link[Mail]] = []
+    
 
 
 class AdminFront(Document):

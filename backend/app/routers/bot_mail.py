@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from backend.app.data import schemas
-from backend.app.data.models import Mail, User
-from backend.app.utils.error import Error
-from backend.app.utils.security import get_current_user
+from app.data import schemas
+from app.data.models import Mail, User
+from app.utils.error import Error
+from app.utils.security import get_current_user
 
 router = APIRouter(prefix="/mail")
 
@@ -19,5 +19,3 @@ async def get_mail(get_current_user: User = Depends(get_current_user)) -> schema
         user_id=mail_history.user_id,
         text=mail_history.text
     )
-
-
