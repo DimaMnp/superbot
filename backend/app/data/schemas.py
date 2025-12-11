@@ -31,8 +31,9 @@ class Mail(BaseModel):
     user_id: str
     text: List[Dict] = []
 
-
-
+class SendMail(BaseModel):
+    send_to: str
+    text: str
 
 
 class UserRequest(BaseModel):

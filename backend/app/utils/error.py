@@ -22,5 +22,13 @@ class Error(Exception):
         status_code=status.HTTP_404_NOT_FOUND,
         detail="History not found."
     )
+    MAIL_NOT_FOUND = HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Mail not found."
+    )
+    FORBIDDEN = HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You don't have a permission"
+    )
     
     

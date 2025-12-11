@@ -30,7 +30,7 @@ async def create_user(request: schemas.UserSchema):
     )
     ai_message = [{
             "role": "ai",
-            "content": "Привет! Я твой виртуальный помощник Метроша. Чем могу помочь?"
+            "content": "Привет! Я твой виртуальный помощник. Чем могу помочь?"
         }]
     await user.create()
     await save_conversation(str(user.id), ai_message)

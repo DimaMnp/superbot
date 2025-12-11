@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from app import ALGORITHM, SECRET_KEY
-from app.data.models import User, TokenData
+from app.data.models import SecretAdmin, User, TokenData
 from app.utils.error import Error
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -33,6 +33,25 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         raise Error.UNAUTHORIZED_INVALID
     
     return user
+
+
+async def get_current_admin(token: Annotated[str, Depends(oauth2_scheme)]):
+    try:
+        payload = jwt.decode(str(token), str(SECRET_KEY), algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise Error.UNAUTHORIZED_INVALID
+        token_data = TokenData(username=username)
+    except InvalidTokenError:
+        raise Error.UNAUTHORIZED_INVALID
+    
+    admin = await SecretAdmin.find_one(SecretAdmin.email == token_data.username, fetch_links=True)
+    if admin is None:
+        raise Error.UNAUTHORIZED_INVALID
+    
+    return admin
+
+
 
 async def get_current_user_websocket(token: str):
     try:
