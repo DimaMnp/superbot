@@ -3,11 +3,17 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+
+
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm config set fetch-retry-maxtimeout 300000 && \
+    npm config set fetch-retry-mintimeout 10000
+
 # Копируем package.json
 COPY package*.json ./
 
 # Устанавливаем все зависимости для сборки
-RUN npm ci
+RUN npm ci --verbose
 
 # Копируем исходный код
 COPY . .
@@ -30,7 +36,7 @@ RUN npm ci --only=production && npm cache clean --force
 # Копируем собранное приложение
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./
+#COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/package.json ./
 
 # Если используете standalone mode, раскомментируйте:

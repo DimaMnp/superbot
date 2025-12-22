@@ -34,6 +34,9 @@ class SecretAdmin(Document):
     last_name: str
     hashed_password: str
     email: EmailStr
+    role: Role
+    age: int
+    gender: Gender
     history: List[Link[Conversation]] = []
     mail: List[Link[Mail]] = []
     
