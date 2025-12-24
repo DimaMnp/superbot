@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +19,7 @@ import {
   MoveDown,
   ArrowDown,
   Mic,
+  Mail,
 } from "lucide-react";
 import { Message } from "@/types/chat";
 import { useTTS } from "@/context/tts-context";
@@ -171,7 +173,7 @@ function ChatMessage({ message }: ChatMessageProps) {
         }`}
       >
         <div className={`flex gap-3 w-full justify-start ${message.sender === "user" ? 'flex-row-reverse ' : 'flex-row'}`}>
-          {message.sender === "user" ? (
+          {/* {message.sender === "user" ? (
             <div
               className={`flex items-center justify-center h-8 w-8 md:h-10 md:w-10 rounded-full flex-shrink-0 ${
                 message.sender === "user"
@@ -192,7 +194,7 @@ function ChatMessage({ message }: ChatMessageProps) {
               className="h-12 w-12"
               alt="Аватарка бота"
             />
-          )}
+          )} */}
 
           <div
             className={`max-w-[85%] md:max-w-[70%] rounded-lg px-3 py-2 md:px-4 md:py-3 ${
@@ -214,67 +216,11 @@ function ChatMessage({ message }: ChatMessageProps) {
                   }`}
                 >
                   <span>{message.timestamp.toLocaleTimeString()}</span>
-                  {message.sender === "assistant" && (
-                    <div className="flex-shrink-0">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          className={`h-9 md:h-10 px-2 md:px-3 rounded-full transition-all duration-200 border-2 text-xs md:text-sm ${getButtonStyles()}`}
-                          onClick={handlePlayPause}
-                          disabled={message.content.length === 0 || isLoading}
-                          title={getButtonTooltip()}
-                        >
-                          {getButtonIcon()}
-                          <span className="ml-1 md:ml-2">Прослушать</span>
-                        </Button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        {message.sender === "assistant" && (
-          <div className="mt-3 ml-15 w-full">
-            {showBubble && (
-              <div ref={bubbleRef} className="flex items-center">
-                <SpeakingBubble
-                  roleKey={(user?.role as keyof typeof roles) ?? "student"}
-                  isPlaying={isCurrentMessagePlaying}
-                  isLoading={isLoading}
-                  progress={currentPlayingId === message.id ? progress : 0}
-                  isPaused={currentPlayingId === message.id && !isPlaying}
-                  size={200}
-                  onToggle={async () => {
-                    // Если уже играет данное сообщение — пауза
-                    if (currentPlayingId === message.id && isPlaying) {
-                      pauseMessage();
-                      return;
-                    }
-
-                    // Если другое сообщение играет, остановим и запустим это
-                    if (currentPlayingId && currentPlayingId !== message.id) {
-                      // playMessage will cleanup and play
-                      await playMessage(message.id, message.content);
-                      return;
-                    }
-
-                    // Если это сообщение не играет, запустим (resume если есть audioRef)
-                    if (currentPlayingId === message.id && !isPlaying) {
-                      resumeMessage();
-                      return;
-                    }
-
-                    // В остальных случаях — старт воспроизведения
-                    await playMessage(message.id, message.content);
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </>
   );
@@ -567,14 +513,27 @@ export function ChatInterface() {
           <CardTitle className="flex items-center gap-2 md:gap-3 text-lg md:text-xl">
             <MessageCircle className="h-5 w-5 md:h-7 md:w-7 text-primary" />
             <div>
-              <div className="font-bold text-sm md:text-base">Метроша</div>
+              <div className="font-bold text-sm md:text-base">Помощник</div>
               <div className="text-xs md:text-sm font-normal text-muted-foreground hidden sm:block">
-                Корпоративный университет
+                Школа 2083
               </div>
             </div>
           </CardTitle>
 
           <div className="flex items-center gap-2">
+            <Link href="/mail">
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex items-center gap-1 md:gap-2 h-8 md:h-9"
+                title="Почта"
+              >
+                <Mail className="h-4 w-4" />
+                <span className="hidden sm:inline text-xs md:text-sm">
+                  Почта
+                </span>
+              </Button>
+            </Link>
             <Button
               size="sm"
               variant="outline"

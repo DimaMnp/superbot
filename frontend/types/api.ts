@@ -16,7 +16,7 @@ export interface RegisterRequest {
   password: string
   first_name: string
   last_name: string
-  role: "student" | "retraining" | "teacher" | "management"
+  role: "student" | "teacher"
   gender: 'male' | 'female'
   age: number
   phone?: string
@@ -29,7 +29,7 @@ export interface UserProfile {
   email: string
   first_name: string
   last_name: string
-  role: "student" | "retraining" | "teacher" | "management"
+  role: "student" | "teacher"
   gender: 'male' | 'female'
   age: number
   phone?: string
@@ -42,7 +42,7 @@ export interface UpdateProfileRequest {
   first_name?: string
   last_name?: string
   email?: string
-  role?: "student" | "retraining" | "teacher" | "management"
+  role?: "student" | "teacher"
   gender?: 'male' | 'female'
   age?: number
   phone?: string
@@ -66,7 +66,7 @@ export interface UserWithHistory {
   first_name: string
   last_name: string
   email: string
-  role: 'student' | 'retraining' | 'teacher' | 'management'
+  role: 'student' | 'teacher'
   age: number
   gender: 'male' | 'female'
   history: Array<{

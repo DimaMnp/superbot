@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useAuth } from '@/context/auth-context'
 import { Button } from '@/components/ui/button'
-import { MessageCircle, User, LogOut, Train, Menu, X } from 'lucide-react'
+import { MessageCircle, User, LogOut, Train, Menu, X, Mail } from 'lucide-react'
 import { useState } from 'react'
 
 export function Navigation() {
@@ -29,9 +29,8 @@ export function Navigation() {
           </Button>
 
           <Link href="/" className="flex items-center gap-2 md:gap-3 font-semibold">
-            <Train className="h-6 w-6 md:h-7 md:w-7 text-primary" />
             <div className="hidden sm:block">
-              <div className="text-sm md:text-lg font-bold">Метроша</div>
+              <div className="text-sm md:text-lg font-bold">Помощник</div>
             </div>
           </Link>
           
@@ -43,6 +42,13 @@ export function Navigation() {
             >
               <MessageCircle className="h-4 w-4" />
               Чат
+            </Link>
+            <Link 
+              href="/mail" 
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+            >
+              <Mail className="h-4 w-4" />
+              Почта
             </Link>
             <Link 
               href="/profile" 
@@ -92,6 +98,14 @@ export function Navigation() {
             >
               <MessageCircle className="h-4 w-4" />
               Чат
+            </Link>
+            <Link 
+              href="/mail" 
+              className="flex items-center gap-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Mail className="h-4 w-4" />
+              Почта
             </Link>
             <Link 
               href="/profile" 

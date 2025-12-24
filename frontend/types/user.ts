@@ -3,7 +3,7 @@ export interface User {
   email: string
   first_name: string
   last_name: string
-  role: 'student' | 'retraining' | 'teacher' | 'management'
+  role: 'student' | 'teacher'
   gender: 'male' | 'female'
   age: number
   phone?: string
@@ -31,7 +31,7 @@ export interface RegisterData {
   password: string
   first_name: string
   last_name: string
-  role: "student" | "retraining" | "teacher" | "management"
+  role: "student" | "teacher"
   gender: 'male' | 'female'
   age: number
   phone?: string
@@ -43,7 +43,7 @@ export interface UpdateUserData {
   first_name?: string
   last_name?: string
   email?: string
-  role?: "student" | "retraining" | "teacher" | "management"
+  role?: "student" | "teacher"
   gender?: 'male' | 'female'
   age?: number
   phone?: string

@@ -80,7 +80,7 @@ export function AuthForm() {
     password: "",
     first_name: "",
     last_name: "",
-    role: "student" as "student" | "retraining" | "teacher" | "management",
+    role: "student" as "student" | "teacher",
     gender: "male" as "male" | "female",
     age: 18,
     phone: "",
@@ -259,7 +259,7 @@ export function AuthForm() {
     },
     {
       title: "Профессиональная информация",
-      description: "Ваша роль в университете",
+      description: "Ваша роль в школе 2083",
       content: (
         <div className="space-y-4">
           <div className="space-y-2">
@@ -268,7 +268,7 @@ export function AuthForm() {
               <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Select
                 value={formData.role}
-                onValueChange={(value: "student" | "retraining" | "teacher" | "management") =>
+                onValueChange={(value: "student" | "teacher") =>
                   setFormData((prev) => ({ ...prev, role: value }))
                 }
               >
@@ -276,10 +276,8 @@ export function AuthForm() {
                   <SelectValue placeholder="Выберите роль" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="student">Студент</SelectItem>
-                  <SelectItem value="teacher">Преподаватель</SelectItem>
-                  <SelectItem value="retraining">Поступающий</SelectItem>
-                  <SelectItem value="management">Управляющий</SelectItem>
+                  <SelectItem value="student">Ученик</SelectItem>
+                  <SelectItem value="teacher">Учитель</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -451,88 +449,6 @@ export function AuthForm() {
             )}
           </Button>
         </form>
-
-        <div className="w-full flex justify-center items-center mt-3 text-gray-500 text-sm">или войти через тестовый аккаунт</div>
-
-        {isLogin && (
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={async () => {
-                setLoading(true)
-                try {
-                  await login({ email: 'student@sol.ru', password: 'qwerty' })
-                  location.reload()
-                } catch (err) {
-                  toast.error('Ошибка входа')
-                } finally {
-                  setLoading(false)
-                }
-              }}
-              className="w-full text-black hover:text-black"
-            >
-              Войти как студент
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={async () => {
-                setLoading(true)
-                try {
-                  await login({ email: 'applicant@sol.ru', password: 'qwerty' })
-                  location.reload()
-                } catch (err) {
-                  toast.error('Ошибка входа')
-                } finally {
-                  setLoading(false)
-                }
-              }}
-              className="w-full text-black hover:text-black"
-            >
-              Войти как поступающий
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={async () => {
-                setLoading(true)
-                try {
-                  await login({ email: 'teacher@sol.ru', password: 'qwerty' })
-                  location.reload()
-                } catch (err) {
-                  toast.error('Ошибка входа')
-                } finally {
-                  setLoading(false)
-                }
-              }}
-              className="w-full text-black hover:text-black"
-            >
-              Войти как учитель
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={async () => {
-                setLoading(true)
-                try {
-                  await login({ email: 'management@sol.ru', password: 'qwerty' })
-                  location.reload()
-                } catch (err) {
-                  toast.error('Ошибка входа')
-                } finally {
-                  setLoading(false)
-                }
-              }}
-              className="w-full text-black hover:text-black"
-            >
-              Войти как управляющий
-            </Button>
-          </div>
-        )}
 
         <div className="mt-6 text-center text-sm">
           {isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?"}{" "}

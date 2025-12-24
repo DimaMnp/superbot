@@ -12,7 +12,7 @@ import jwt
 
 context_pass = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
 
 def verify_password(plain_password, hashed_password):
 

@@ -80,21 +80,25 @@ async def get_mail(get_current_user: User = Depends(get_current_user)) -> schema
                 "description": "Unauthorised. You are not authorised to make mail"
             }
         })
-async def post_mail(data: schemas.SendMail, get_current_admin: SecretAdmin = Depends(get_current_admin)) -> schemas.Mail:
-    admin = await SecretAdmin.find_one(SecretAdmin.email == get_current_admin.email)
-    if not admin:
-        raise Error.FORBIDDEN
+async def post_mail(data: schemas.SendMail, get_current_user: User = Depends(get_current_user)) -> schemas.Mail:
+    # Both teachers and admins can send mail
+    user = await User.find_one(User.email == get_current_user.email)
+    if not user or user.role != "teacher":
+        # Check if user is an admin
+        admin = await SecretAdmin.find_one(SecretAdmin.email == get_current_user.email)
+        if not admin:
+            raise Error.FORBIDDEN
     
-    user = await find_user(data.send_to)
+    recipient = await find_user(data.send_to)
     message = {
         'msg': data.text
     }
     text = []
     text.append(message)
-    await WriteMail(user.id, text)
+    await WriteMail(recipient.id, text)
 
     return schemas.Mail(
-        user_id=str(user.id),
+        user_id=str(recipient.id),
         text=text
     )
 

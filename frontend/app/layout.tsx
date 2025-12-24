@@ -9,8 +9,8 @@ import { Toaster } from '@/lib/toaster'
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
 export const metadata: Metadata = {
-  title: 'Метроша - Корпоративный университет',
-  description: 'ИИ-ассистент Корпоративного университета Московского транспорта',
+  title: 'Помощник - Школа 2083',
+  description: 'ИИ-ассистент школы 2083',
 }
 
 export default function RootLayout({

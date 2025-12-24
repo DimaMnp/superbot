@@ -48,7 +48,7 @@ export function ProfileForm() {
     first_name: string;
     last_name: string;
     email: string;
-    role: "student" | "retraining" | "teacher" | "management";
+    role: "student" | "teacher";
     gender: "male" | "female";
     age: number;
     phone: string;
@@ -271,29 +271,23 @@ export function ProfileForm() {
               <Select
                 value={formData.role}
                 onValueChange={(
-                  value: "student" | "retraining" | "teacher" | "management"
+                  value: "student" | "teacher"
                 ) => setFormData((prev) => ({ ...prev, role: value }))}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="student">Студент</SelectItem>
-                  <SelectItem value="teacher">Преподаватель</SelectItem>
-                  <SelectItem value="retraining">Поступающий</SelectItem>
-                  <SelectItem value="management">Управляющий</SelectItem>
+                  <SelectItem value="student">Ученик</SelectItem>
+                  <SelectItem value="teacher">Учитель</SelectItem>
                 </SelectContent>
               </Select>
             ) : (
               <div className="p-2 border rounded-md bg-muted/50 capitalize flex items-center gap-2">
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
                 {user.role === "student"
-                  ? "Студент"
-                  : user.role === "teacher"
-                  ? "Преподаватель"
-                  : user.role === "retraining"
-                  ? "Поступающий"
-                  : "Управляющий"}
+                  ? "Ученик"
+                  : "Учитель"}
               </div>
             )}
           </div>
