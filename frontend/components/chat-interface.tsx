@@ -236,6 +236,7 @@ export function ChatInterface() {
     error,
     sendMessage,
     clearMessages,
+    connect,
   } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -301,7 +302,24 @@ export function ChatInterface() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim() || !isConnected) return;
+    if (!inputMessage.trim()) return;
+
+    // Если не подключен, пытаемся подключиться
+    if (!isConnected && !isConnecting) {
+      try {
+        await connect();
+        // Ждем немного для подключения
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (error) {
+        toast.error("Не удалось подключиться к боту. Попробуйте позже.");
+        return;
+      }
+    }
+
+    if (!isConnected) {
+      toast.error("Подключение к боту... Пожалуйста, подождите.");
+      return;
+    }
 
     try {
       sendMessage(inputMessage);
@@ -591,10 +609,10 @@ export function ChatInterface() {
               placeholder={
                 isConnected
                   ? "Введите ваше сообщение..."
-                  : "Вызываем метрошу..."
+                  : "написать боту"
               }
               className="flex-1 h-10 md:h-12 text-sm md:text-base border-2 focus:border-primary transition-colors"
-              disabled={!isConnected || isConnecting}
+              disabled={isConnecting}
             />
             <div className="flex items-center gap-2">
               <Button
@@ -619,7 +637,7 @@ export function ChatInterface() {
                 type="submit"
                 size="sm"
                 className="h-10 w-13 md:h-12 px-3 md:px-6 bg-primary hover:bg-primary/90 transition-all duration-200"
-                disabled={!inputMessage.trim() || !isConnected || isConnecting}
+                disabled={!inputMessage.trim() || isConnecting}
               >
                 {isRecognizing ? (
                   <Loader2 className="h-5 w-5 md:h-5 md:w-5 animate-spin" />

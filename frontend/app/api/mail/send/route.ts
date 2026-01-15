@@ -24,7 +24,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Call backend API to send mail
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/mail/`, {
+    // In Docker, use service name 'backend' for internal communication
+    // API_BASE_URL is for server-side (Docker internal), NEXT_PUBLIC_API_BASE_URL is for client-side
+    const apiBaseUrl = process.env.API_BASE_URL || 'http://backend:8000/api';
+    const response = await fetch(`${apiBaseUrl}/mail/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,11 +39,21 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Backend error:', errorData);
-      throw new Error(`Backend error: ${response.status}`);
-    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Backend error:', errorData);
+        
+        // Handle specific error cases
+        if (response.status === 404) {
+          throw new Error('Пользователь не найден. Проверьте правильность имени.');
+        } else if (response.status === 403) {
+          throw new Error('У вас нет прав для отправки писем.');
+        } else if (response.status === 401) {
+          throw new Error('Ошибка авторизации.');
+        }
+        
+        throw new Error(`Backend error: ${response.status}`);
+      }
 
     const data = await response.json();
 

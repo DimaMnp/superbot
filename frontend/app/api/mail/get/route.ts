@@ -14,7 +14,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Call backend API to get user's mails
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/mail/`, {
+    // In Docker, use service name 'backend' for internal communication
+    // API_BASE_URL is for server-side (Docker internal), NEXT_PUBLIC_API_BASE_URL is for client-side
+    const apiBaseUrl = process.env.API_BASE_URL || 'http://backend:8000/api';
+    const response = await fetch(`${apiBaseUrl}/mail/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -22,26 +25,34 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Backend error:', errorData);
-      throw new Error(`Backend error: ${response.status}`);
-    }
+      // Handle case when user has no mail (404) - return empty array instead of error
+      if (response.status === 404) {
+        return NextResponse.json({
+          mails: [],
+          success: true,
+        });
+      }
 
-    const data = await response.json();
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Backend error:', errorData);
+        throw new Error(`Backend error: ${response.status}`);
+      }
 
-    // Transform backend response to match frontend expectations
-    const mails = (data.text || []).map((mail: any, index: number) => ({
-      id: `${index}-${Date.now()}`,
-      text: mail.msg || mail,
-      sender: 'Администратор',
-      timestamp: new Date().toISOString(),
-    }));
+      const data = await response.json();
 
-    return NextResponse.json({
-      mails,
-      success: true,
-    });
+      // Transform backend response to match frontend expectations
+      const mails = (data.text || []).map((mail: any, index: number) => ({
+        id: `${index}-${Date.now()}`,
+        text: mail.msg || mail,
+        sender: 'Администратор',
+        timestamp: new Date().toISOString(),
+      }));
+
+      return NextResponse.json({
+        mails,
+        success: true,
+      });
   } catch (error) {
     console.error('Error fetching mails:', error);
     return NextResponse.json(

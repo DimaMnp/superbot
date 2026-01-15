@@ -30,7 +30,11 @@ async def save_conversation(user_id: str, new_messages: List[Dict]):
         )
         await conversation.insert()
     user = await User.find_one(User.id == uuid.UUID(user_id), fetch_links=True)
-    if not user or not user.history:
+    if not user:
+        return  # User not found, skip linking
+    if not user.history:
+        user.history = []
+    if conversation not in user.history:
         user.history.append(conversation)
         await user.save()
             
@@ -80,20 +84,25 @@ async def assistant(websocket: WebSocket) -> str:
             }
         payload = await payloads(str(user.role.value), user.age, str(user.gender.value))
         print(payload)
-        with GigaChat(credentials=GIGA_KEY, ca_bundle_file=ca_bundle_file, verify_ssl_certs=False) as giga:
-            payload.messages.append(Messages(role=MessagesRole.USER, content=data))
-            response = giga.chat(payload)
-            payload.messages.append(response.choices[0].message)
-            ai_message = {
-                "role": "ai",
-                "content": response.choices[0].message.content
-            }
-        await websocket.send_text(response.choices[0].message.content)
+        try:
+            with GigaChat(credentials=GIGA_KEY, ca_bundle_file=ca_bundle_file, verify_ssl_certs=False) as giga:
+                payload.messages.append(Messages(role=MessagesRole.USER, content=data))
+                response = giga.chat(payload)
+                payload.messages.append(response.choices[0].message)
+                ai_message = {
+                    "role": "ai",
+                    "content": response.choices[0].message.content
+                }
+            await websocket.send_text(response.choices[0].message.content)
 
-        session_messages = []
-        session_messages.append(user_message)
-        session_messages.append(ai_message)
-        await save_conversation(str(user.id), session_messages)
+            session_messages = []
+            session_messages.append(user_message)
+            session_messages.append(ai_message)
+            await save_conversation(str(user.id), session_messages)
+        except Exception as e:
+            error_message = f"Ошибка при обработке запроса: {str(e)}"
+            print(f"GigaChat error: {error_message}")
+            await websocket.send_text(error_message)
         
 @router.delete(
     '/',

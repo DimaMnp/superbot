@@ -2,9 +2,10 @@ import uuid
 from fastapi import APIRouter, Depends
 
 from app.data import schemas
-from app.data.models import Mail, SecretAdmin, User
+from app.data.models import Mail, User
+from app.data.schemas import Role
 from app.utils.error import Error
-from app.utils.security import get_current_admin, get_current_user
+from app.utils.security import get_current_user
 
 router = APIRouter(prefix="/mail", tags=["Mail"])
 
@@ -20,7 +21,11 @@ async def WriteMail(user_id, text):
         )
         await userMail.insert()
     user = await User.find_one(User.id == user_id, fetch_links=True)
-    if not user or not user.mail:
+    if not user:
+        return  # User not found, skip linking
+    if not user.mail:
+        user.mail = []
+    if userMail not in user.mail:
         user.mail.append(userMail)
         await user.save()
 async def find_user(data):
@@ -63,7 +68,10 @@ async def find_user(data):
 async def get_mail(get_current_user: User = Depends(get_current_user)) -> schemas.Mail:
     mail_history = await Mail.find_one(Mail.user_id == str(get_current_user.id))
     if not mail_history:
-        raise Error.MAIL_NOT_FOUND
+        return schemas.Mail(
+            user_id=str(get_current_user.id),
+            text=[]
+        )
     
     return schemas.Mail(
         user_id=mail_history.user_id,
@@ -81,15 +89,15 @@ async def get_mail(get_current_user: User = Depends(get_current_user)) -> schema
             }
         })
 async def post_mail(data: schemas.SendMail, get_current_user: User = Depends(get_current_user)) -> schemas.Mail:
-    # Both teachers and admins can send mail
-    user = await User.find_one(User.email == get_current_user.email)
-    if not user or user.role != "teacher":
-        # Check if user is an admin
-        admin = await SecretAdmin.find_one(SecretAdmin.email == get_current_user.email)
-        if not admin:
-            raise Error.FORBIDDEN
+    # Only teachers can send mail
+    # get_current_user already returns User with fetch_links, no need to query again
+    if get_current_user.role != Role.teacher:
+        raise Error.FORBIDDEN
     
     recipient = await find_user(data.send_to)
+    if not recipient:
+        raise Error.USER_NOT_FOUND
+    
     message = {
         'msg': data.text
     }

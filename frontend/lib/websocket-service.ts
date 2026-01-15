@@ -35,7 +35,19 @@ class WebSocketService {
       throw new Error('API base URL not configured')
     }
 
-    const wsUrl = baseUrl.replace(/^https?:\/\//, 'wss://') + '/ai/'
+    // Determine WebSocket protocol: ws:// for http://, wss:// for https://
+    // In Docker internal network, use ws:// even if baseUrl is http://
+    let wsProtocol = 'ws://'
+    if (baseUrl.startsWith('https://')) {
+      wsProtocol = 'wss://'
+    } else if (baseUrl.startsWith('http://')) {
+      // For Docker internal network, keep ws://
+      wsProtocol = 'ws://'
+    }
+    
+    // Extract host and path from baseUrl
+    const urlWithoutProtocol = baseUrl.replace(/^https?:\/\//, '')
+    const wsUrl = `${wsProtocol}${urlWithoutProtocol}/ai/`
     const url = `${wsUrl}?Authorization=${encodeURIComponent(token)}`
 
     console.log('🔌 Connecting to WebSocket...')
@@ -74,9 +86,23 @@ class WebSocketService {
           }
 
           ws.onmessage = (event) => {
+            const messageText = event.data
+            
+            // Filter out GigaChat API errors - don't show them to users
+            if (messageText.includes('Ошибка при обработке запроса') || 
+                messageText.includes('Authorization error') ||
+                messageText.includes('ngw.devices.sberbank.ru') ||
+                messageText.includes('401') ||
+                messageText.includes('status_code')) {
+              console.error('GigaChat API error received:', messageText)
+              // Don't show API errors to users, just log them
+              this.notifyErrorHandlers('Ошибка подключения к AI-сервису. Попробуйте позже.')
+              return
+            }
+            
             const assistantMessage: Message = {
               id: `ai_${Date.now()}`,
-              content: event.data,
+              content: messageText,
               sender: 'assistant',
               timestamp: new Date(),
               status: 'sent',

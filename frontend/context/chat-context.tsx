@@ -56,7 +56,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       await connect();
     } catch (error: any) {
       console.log('ℹ️ No conversation history found or error loading:', error.message)
-      // Если истории нет - это нормально
+      // Если истории нет - это нормально, но все равно пытаемся подключиться
+      try {
+        await connect();
+      } catch (connectError) {
+        console.error('❌ Failed to connect after loading conversation:', connectError)
+      }
     }
   }, [token])
 
@@ -120,13 +125,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       throw new Error('User not authenticated')
     }
 
-    if (chatState.isConnected || chatState.isConnecting) {
-      console.log('🔄 Connection already in progress or established')
-      return
-    }
+    setChatState(prev => {
+      if (prev.isConnected || prev.isConnecting) {
+        console.log('🔄 Connection already in progress or established')
+        return prev
+      }
+      return { ...prev, isConnecting: true, error: null }
+    })
 
     console.log('🔌 Starting WebSocket connection...')
-    setChatState(prev => ({ ...prev, isConnecting: true, error: null }))
 
     try {
       await websocketService.connect(token)
@@ -142,6 +149,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       let errorMessage = 'Не удалось подключиться к ассистенту'
       if (error.message?.includes('401')) {
         errorMessage = 'Ошибка авторизации'
+      } else if (error.message?.includes('timeout')) {
+        errorMessage = 'Таймаут подключения. Проверьте соединение с интернетом.'
       }
       
       setChatState(prev => ({
@@ -152,7 +161,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       }))
       throw error
     }
-  }, [token, isAuthenticated, chatState.isConnected, chatState.isConnecting])
+  }, [token, isAuthenticated])
 
   const disconnect = useCallback((): void => {
     console.log('🔌 Disconnecting WebSocket...')

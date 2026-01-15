@@ -292,7 +292,7 @@ export function ProfileForm() {
             )}
           </div>
 
-          {(user.role === "teacher" || user.role === "management") && (
+          {user.role === "teacher" && (
             <>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Кафедра/Отдел</label>
