@@ -89,8 +89,6 @@ async def get_mail(get_current_user: User = Depends(get_current_user)) -> schema
             }
         })
 async def post_mail(data: schemas.SendMail, get_current_user: User = Depends(get_current_user)) -> schemas.Mail:
-    # Only teachers can send mail
-    # get_current_user already returns User with fetch_links, no need to query again
     if get_current_user.role != Role.teacher:
         raise Error.FORBIDDEN
     

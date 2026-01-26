@@ -22,24 +22,24 @@ services:
       - PYTHONPATH=/app
     depends_on:
       - mongo
-    volumes:
-      - ./backend:/app  # Для hot-reload в разработке
-      - /app/__pycache__  # Игнорируем кэш Python
     restart: unless-stopped
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   # Next.js фронтенд
   frontend:
     build: 
       context: ./frontend
-      # Указываем использовать production сборку
-      target: runner  # Или builder для разработки
+      target: runner
     container_name: superbot-frontend
     ports:
       - "3000:3000"
+    environment:
+      
+      - NEXT_PUBLIC_API_BASE_URL=http://5.35.12.207:8000/api
+      
+      - API_BASE_URL=http://backend:8000/api
     depends_on:
       - backend
-    # Не добавляем volumes для production сборки
     restart: unless-stopped
 
 volumes:
