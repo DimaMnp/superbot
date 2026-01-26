@@ -41,8 +41,9 @@ app.add_middleware(
 @app.on_event('startup')
 async def startup_event():
     client = AsyncIOMotorClient(MONGO_DSN)
+    database = client["newbotbase"]
 
     await init_beanie(
-        database=client.get_default_database(),
+        database=database,
         document_models=Document.__subclasses__() + UnionDoc.__subclasses__()
     )
