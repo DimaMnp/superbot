@@ -40,29 +40,9 @@ app.add_middleware(
 
 @app.on_event('startup')
 async def startup_event():
-    import asyncio
-    max_retries = 10
-    retry_delay = 2
-    
-    for attempt in range(max_retries):
-        try:
-            client = AsyncIOMotorClient(
-                MONGO_DSN,
-                serverSelectionTimeoutMS=5000
-            )
-            # Проверяем подключение
-            await client.admin.command('ping')
-            
-            await init_beanie(
-                database=client.get_default_database(),
-                document_models=Document.__subclasses__() + UnionDoc.__subclasses__()
-            )
-            print(f"✅ Successfully connected to MongoDB on attempt {attempt + 1}")
-            break
-        except Exception as e:
-            if attempt < max_retries - 1:
-                print(f"⚠️ MongoDB connection attempt {attempt + 1} failed: {e}. Retrying in {retry_delay}s...")
-                await asyncio.sleep(retry_delay)
-            else:
-                print(f"❌ Failed to connect to MongoDB after {max_retries} attempts: {e}")
-                raise
+    client = AsyncIOMotorClient(MONGO_DSN)
+
+    await init_beanie(
+        database=client.get_default_database(),
+        document_models=Document.__subclasses__() + UnionDoc.__subclasses__()
+    )
