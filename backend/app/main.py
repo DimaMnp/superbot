@@ -29,11 +29,19 @@ api_router.include_router(ai.router)
 api_router.include_router(bot_mail.router)
 
 app.include_router(api_router)
+from fastapi import Request
+import time
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://192.168.0.119:3000",
+        "http://5.35.12.207:3000",
+        "http://frontend:3000"
+    ],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -44,6 +52,6 @@ async def startup_event():
     database = client["newbotbase"]
 
     await init_beanie(
-        database=database,
-        document_models=Document.__subclasses__() + UnionDoc.__subclasses__()
+       database=database,
+       document_models=Document.__subclasses__() + UnionDoc.__subclasses__()
     )
