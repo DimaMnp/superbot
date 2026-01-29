@@ -38,8 +38,10 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://192.168.0.119:3000",
-        "http://5.35.12.207:3000",
-        "http://frontend:3000"
+#        "http://5.35.12.207:3000",
+        "http://frontend:3000",
+	"https://dimamnp.ru",
+	"https://www.dimamnp.ru"
     ],
     allow_credentials=False,
     allow_methods=["*"],
