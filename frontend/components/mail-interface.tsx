@@ -43,7 +43,7 @@ export function MailInterface() {
     
     try {
       setLoading(true);
-      const response = await fetch("/api/mail/get", {
+      const response = await fetch("/api/mail", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export function MailInterface() {
 
     try {
       setSending(true);
-      const response = await fetch("/api/mail/send", {
+      const response = await fetch("/api/mail", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
