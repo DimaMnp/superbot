@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { toast } from '@/lib/toaster'
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,6 @@ import {
   Users,
   Phone,
   Calendar,
-  Building,
   ArrowLeft,
 } from "lucide-react";
 
@@ -84,8 +83,7 @@ export function AuthForm() {
     gender: "male" as "male" | "female",
     age: 18,
     phone: "",
-    department: "",
-    position: "",
+    // Убраны поля department и position
   });
   const [loading, setLoading] = useState(false);
   const { login, register } = useAuth();
@@ -233,7 +231,7 @@ export function AuthForm() {
                 placeholder="Возраст"
                 value={formData.age}
                 onChange={handleChange}
-                min="16"
+                min="8"
                 max="100"
                 required
                 className="pl-10"
@@ -258,8 +256,8 @@ export function AuthForm() {
       ),
     },
     {
-      title: "Профессиональная информация",
-      description: "Ваша роль в школе 2083",
+      title: "Выбор роли",
+      description: "Выберите вашу роль в системе",
       content: (
         <div className="space-y-4">
           <div className="space-y-2">
@@ -282,31 +280,12 @@ export function AuthForm() {
               </Select>
             </div>
           </div>
-
-          {(formData.role === "teacher") && (
-            <>
-              <div className="space-y-2">
-                <div className="relative">
-                  <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    name="department"
-                    placeholder="Кафедра/Отдел"
-                    value={formData.department}
-                    onChange={handleChange}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Input
-                  name="position"
-                  placeholder="Должность"
-                  value={formData.position}
-                  onChange={handleChange}
-                />
-              </div>
-            </>
+          
+          {/* Убраны поля для учителя */}
+          {formData.role === "teacher" && (
+            <div className="text-sm text-muted-foreground p-3 bg-gray-50 rounded-lg">
+              Регистрация как учитель предоставит доступ к расширенным функциям системы
+            </div>
           )}
         </div>
       ),

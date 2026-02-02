@@ -34,7 +34,6 @@ import {
   Mail,
   Phone,
   Calendar,
-  Building,
   Briefcase,
   Venus,
   Mars,
@@ -52,8 +51,6 @@ export function ProfileForm() {
     gender: "male" | "female";
     age: number;
     phone: string;
-    department: string;
-    position: string;
   };
 
   const [formData, setFormData] = useState<ProfileFormData>({
@@ -64,8 +61,6 @@ export function ProfileForm() {
     gender: (user?.gender as ProfileFormData["gender"]) || "male",
     age: user?.age || 18,
     phone: user?.phone || "",
-    department: user?.department || "",
-    position: user?.position || "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -93,8 +88,6 @@ export function ProfileForm() {
       gender: user?.gender || "male",
       age: user?.age || 18,
       phone: user?.phone || "",
-      department: user?.department || "",
-      position: user?.position || "",
     });
     setIsEditing(false);
   };
@@ -291,53 +284,6 @@ export function ProfileForm() {
               </div>
             )}
           </div>
-
-          {user.role === "teacher" && (
-            <>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Кафедра/Отдел</label>
-                {isEditing ? (
-                  <div className="relative">
-                    <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      value={formData.department}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          department: e.target.value,
-                        }))
-                      }
-                      className="pl-10"
-                    />
-                  </div>
-                ) : (
-                  <div className="p-2 border rounded-md bg-muted/50 flex items-center gap-2">
-                    <Building className="h-4 w-4 text-muted-foreground" />
-                    {user.department || "Не указано"}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Должность</label>
-                {isEditing ? (
-                  <Input
-                    value={formData.position}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        position: e.target.value,
-                      }))
-                    }
-                  />
-                ) : (
-                  <div className="p-2 border rounded-md bg-muted/50">
-                    {user.position || "Не указана"}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
 
           {/* <div className="space-y-2">
             <label className="text-sm font-medium">Дата регистрации</label>
