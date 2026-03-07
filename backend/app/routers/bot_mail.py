@@ -29,31 +29,34 @@ async def WriteMail(user_id, text):
         user.mail.append(userMail)
         await user.save()
 async def find_user(data):
-     
-     data_words = data.strip().split()
-     if len(data_words) == 2:
+     # allow lookup by email as well as name
+     input_str = data.strip()
+     # if it looks like an email address, try email first
+     if "@" in input_str and " " not in input_str:
+         user = await User.find_one(User.email == input_str)
+         if user:
+             return user
+         # fall through to name parsing if no one by that email
 
-       
-        user = await User.find_one(
-            User.first_name == data_words[0],
-            User.last_name == data_words[1]
-        )
-        
-        if not user:
-            user = await User.find_one(
-                User.first_name == data_words[1],
-                User.last_name == data_words[0]
-            )
-            
-        return user
+     data_words = input_str.split()
+     if len(data_words) == 2:
+         user = await User.find_one(
+             User.first_name == data_words[0],
+             User.last_name == data_words[1]
+         )
+         if not user:
+             user = await User.find_one(
+                 User.first_name == data_words[1],
+                 User.last_name == data_words[0]
+             )
+         return user
      else:
-        user_by_first = await User.find_one(User.first_name == data_words[0])
-        if user_by_first:
-            return user_by_first
-            
-        user_by_last = await User.find_one(User.last_name == data_words[0])
-        return user_by_last
-        
+         user_by_first = await User.find_one(User.first_name == data_words[0])
+         if user_by_first:
+             return user_by_first
+         user_by_last = await User.find_one(User.last_name == data_words[0])
+         return user_by_last
+
     
 
 

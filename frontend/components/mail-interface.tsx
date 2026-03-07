@@ -73,10 +73,13 @@ export function MailInterface() {
       toast.error("Заполните все поля");
       return;
     }
-
-    if (!token) {
-      toast.error("Нет авторизации");
+    // optionally validate email pattern
+    // not strict, just to warn
+    const emailLike = recipientName.includes('@');
+    if (emailLike && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientName)) {
+      toast.error("Некорректный email");
       return;
+    }
     }
 
     try {
@@ -189,7 +192,7 @@ export function MailInterface() {
             <form onSubmit={handleSendMail} className="flex-1 flex flex-col gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">
-                  Кому (имя ученика или класс)
+                  Кому (email, имя ученика или класс)
                 </label>
                 <Input
                   type="text"
