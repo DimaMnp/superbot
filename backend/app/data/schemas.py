@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Dict, List
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class Gender(Enum):
@@ -33,7 +33,8 @@ class Mail(BaseModel):
     text: List[Dict] = []
 
 class SendMail(BaseModel):
-    send_to: str
+    # recipient must be specified by email to avoid ambiguous name lookups
+    send_to: EmailStr
     text: str
 
 

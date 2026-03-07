@@ -173,6 +173,9 @@ export function MailInterface() {
                     selectedMail?.id === mail.id ? "bg-muted" : ""
                   }`}
                 >
+                  <div className="text-xs text-muted-foreground mb-1">
+                    {mail.sender && <span>от {mail.sender}</span>}
+                  </div>
                   <div className="text-sm line-clamp-3 text-muted-foreground">
                     {mail.text}
                   </div>

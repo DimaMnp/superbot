@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       const mails = (data.text || []).map((mail: any, index: number) => ({
         id: `${index}-${Date.now()}`,
         text: mail.msg || mail,
-        sender: 'Администратор',
+        sender: mail.from || 'Администратор',
         timestamp: new Date().toISOString(),
       }));
 

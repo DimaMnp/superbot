@@ -69,6 +69,11 @@ async def find_user(data):
             }
         })
 async def get_mail(get_current_user: User = Depends(get_current_user)) -> schemas.Mail:
+    # log for debug: which user is requesting mail
+    try:
+        print(f"Fetching mail for user {get_current_user.email} id={get_current_user.id}")
+    except Exception:
+        pass
     mail_history = await Mail.find_one(Mail.user_id == str(get_current_user.id))
     if not mail_history:
         return schemas.Mail(
@@ -95,17 +100,30 @@ async def post_mail(data: schemas.SendMail, get_current_user: User = Depends(get
     # only teachers and parents may compose messages
     if get_current_user.role not in (Role.teacher, Role.parent):
         raise Error.FORBIDDEN
-    
-    recipient = await find_user(data.send_to)
+
+    # look up recipient strictly by email
+    recipient = await User.find_one(User.email == data.send_to)
     if not recipient:
         raise Error.USER_NOT_FOUND
-    
+
+    # construct the mail entry with metadata in case we need it later
     message = {
-        'msg': data.text
+        'msg': data.text,
+        'from': get_current_user.email,
+        'to': recipient.email,
     }
-    text = []
-    text.append(message)
+    text = [message]
+
+    # write to recipient mailbox
     await WriteMail(recipient.id, text)
+    # also keep a copy for sender so they can verify what was sent
+    await WriteMail(get_current_user.id, text)
+
+    # log for debugging
+    try:
+        print(f"Mail sent from {get_current_user.email} to {recipient.email}, recipient_id={recipient.id}")
+    except Exception:
+        pass
 
     return schemas.Mail(
         user_id=str(recipient.id),
