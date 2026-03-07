@@ -17,6 +17,7 @@ import { toast } from "@/lib/toaster";
 interface MailMessage {
   id: string;
   text: string;
+  sender?: string;
 }
 
 export function MailInterface() {
