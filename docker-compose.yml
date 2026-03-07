@@ -4,12 +4,17 @@ services:
     image: mongo:6
     container_name: superbot-mongo
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=newbotbase
+      - MONGO_INITDB_ROOT_USERNAME=suckmyass
+      - MONGO_INITDB_ROOT_PASSWORD=pososieblan
+    
+    networks:
+      - app-network
+    
+    command: mongod --auth
 
   # FastAPI бэкенд
   backend:
@@ -18,13 +23,14 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     environment:
-      - MONGO_DSN=mongodb://mongo:27017/newbotbase
+      - MONGO_DSN=mongodb://suckmyass:pososieblan@mongo:27017/newbotbase?authSource=admin
       - PYTHONPATH=/app
     depends_on:
       - mongo
     restart: unless-stopped
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
-
+    networks:
+      - app-network
   # Next.js фронтенд
   frontend:
     build: 
@@ -39,6 +45,11 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-
+    networks:
+      - app-network
 volumes:
   mongo_data:
+
+networks:
+  app-network:
+    driver: bridge

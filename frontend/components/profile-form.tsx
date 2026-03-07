@@ -222,7 +222,7 @@ export function ProfileForm() {
                         age: parseInt(e.target.value) || 18,
                       }))
                     }
-                    min="16"
+                    min="8"
                     max="100"
                     className="pl-10"
                   />
