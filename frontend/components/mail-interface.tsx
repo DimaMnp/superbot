@@ -80,7 +80,6 @@ export function MailInterface() {
       toast.error("Некорректный email");
       return;
     }
-    }
 
     try {
       setSending(true);
