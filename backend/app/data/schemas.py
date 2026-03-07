@@ -11,6 +11,7 @@ class Gender(Enum):
 class Role(Enum):
     student = "student"
     teacher = 'teacher'
+    parent = 'parent'
 
 
 class UserSchema(BaseModel):

@@ -39,6 +39,9 @@ async def save_conversation(user_id: str, new_messages: List[Dict]):
         await user.save()
             
 async def payloads(payload: str, age: int, gender: str):
+    # normalize role value and provide default to avoid crashes/hallucinations
+    if payload not in ("student", "teacher", "parent"):
+        payload = "student"
     if payload == "student":
         return Chat(
             messages=[
@@ -47,7 +50,7 @@ async def payloads(payload: str, age: int, gender: str):
                     content=prompts.prompts["student"]+f"Учитывай возраст:{age} и пол: {gender}"
                 )
             ],
-            temperature=0.8,
+            temperature=0.4,  # lower to reduce hallucinations
             max_tokens=10000,
         )
     
@@ -59,7 +62,21 @@ async def payloads(payload: str, age: int, gender: str):
                     content=prompts.prompts["teacher"]+f"Учитывай возраст:{age} и пол: {gender}"
                 )
             ],
-            temperature=0.6,
+            temperature=0.3,  # teachers should get more deterministic answers
+            max_tokens=10000,
+        )
+    
+    if payload == "parent":
+        # parents generally ask about school information on behalf of children,
+        # communicate in a respectful and supportive tone similar to teachers
+        return Chat(
+            messages=[
+                Messages(
+                    role=MessagesRole.SYSTEM,
+                    content=prompts.prompts["parent"]+f"Учитывай возраст:{age} и пол: {gender}"
+                )
+            ],
+            temperature=0.3,
             max_tokens=10000,
         )
     

@@ -79,7 +79,7 @@ export function AuthForm() {
     password: "",
     first_name: "",
     last_name: "",
-    role: "student" as "student" | "teacher",
+    role: "student" as "student" | "teacher" | "parent",
     gender: "male" as "male" | "female",
     age: 18,
     phone: "",
@@ -266,7 +266,7 @@ export function AuthForm() {
               <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Select
                 value={formData.role}
-                onValueChange={(value: "student" | "teacher") =>
+                onValueChange={(value: "student" | "teacher" | "parent") =>
                   setFormData((prev) => ({ ...prev, role: value }))
                 }
               >
@@ -276,6 +276,7 @@ export function AuthForm() {
                 <SelectContent>
                   <SelectItem value="student">Ученик</SelectItem>
                   <SelectItem value="teacher">Учитель</SelectItem>
+                  <SelectItem value="parent">Родитель</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -285,6 +286,11 @@ export function AuthForm() {
           {formData.role === "teacher" && (
             <div className="text-sm text-muted-foreground p-3 bg-gray-50 rounded-lg">
               Регистрация как учитель предоставит доступ к расширенным функциям системы
+            </div>
+          )}
+          {formData.role === "parent" && (
+            <div className="text-sm text-muted-foreground p-3 bg-gray-50 rounded-lg">
+              Регистрация как родитель позволит взаимодействовать с учителями и получать информацию о ребёнке
             </div>
           )}
         </div>

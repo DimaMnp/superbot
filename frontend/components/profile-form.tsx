@@ -47,7 +47,7 @@ export function ProfileForm() {
     first_name: string;
     last_name: string;
     email: string;
-    role: "student" | "teacher";
+    role: "student" | "teacher" | "parent";
     gender: "male" | "female";
     age: number;
     phone: string;
@@ -280,7 +280,9 @@ export function ProfileForm() {
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
                 {user.role === "student"
                   ? "Ученик"
-                  : "Учитель"}
+                  : user.role === "teacher"
+                  ? "Учитель"
+                  : "Родитель"}
               </div>
             )}
           </div>

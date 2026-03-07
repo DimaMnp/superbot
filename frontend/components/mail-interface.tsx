@@ -30,6 +30,7 @@ export function MailInterface() {
   const [mailContent, setMailContent] = useState("");
 
   const isTeacher = user?.role === "teacher";
+  const isParent = user?.role === "parent";
 
   // Fetch mails on component mount
   useEffect(() => {
@@ -128,7 +129,7 @@ export function MailInterface() {
       {/* Левая панель */}
       <div className="w-64 border-r bg-muted/30 flex flex-col overflow-hidden">
         <div className="p-4 border-b">
-          {isTeacher && (
+          {(isTeacher || isParent) && (
             <Button
               onClick={handleComposeClick}
               className="w-full rounded-lg flex items-center gap-2"
@@ -242,7 +243,7 @@ export function MailInterface() {
             <div className="text-center text-muted-foreground">
               <Mail className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm">
-                {isTeacher
+                {isTeacher || isParent
                   ? "Выберите письмо для просмотра или напишите новое"
                   : "Выберите письмо для просмотра"}
               </p>

@@ -89,7 +89,8 @@ async def get_mail(get_current_user: User = Depends(get_current_user)) -> schema
             }
         })
 async def post_mail(data: schemas.SendMail, get_current_user: User = Depends(get_current_user)) -> schemas.Mail:
-    if get_current_user.role != Role.teacher:
+    # only teachers and parents may compose messages
+    if get_current_user.role not in (Role.teacher, Role.parent):
         raise Error.FORBIDDEN
     
     recipient = await find_user(data.send_to)
