@@ -58,7 +58,15 @@ export function MailInterface() {
       }
 
       const data = await response.json();
-      setMails(data.mails || []);
+      // the server-side wrapper normally returns { mails: [...] }
+      // when bypassing the wrapper we may receive { text: [...] } directly from backend
+      const raw = data.mails ?? data.text ?? [];
+      const items = (raw || []).map((m: any, idx: number) => ({
+        id: m.id || m._id || idx.toString(),
+        text: m.msg || m.text || JSON.stringify(m),
+        sender: m.from || m.sender || undefined,
+      }));
+      setMails(items);
     } catch (error) {
       console.error("Error fetching mails:", error);
       toast.error("Не удалось загрузить письма");
